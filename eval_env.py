@@ -45,8 +45,8 @@ q_a_h[2][2]=[0.79,0.21]
 q_a_h[2][3]=[0.35,0.65]
 
 
-# 2 sensors with fixed distributions for the model and the adversary obs
-# 3 hypothesis -> all normal , first or second behaving abnormally
+# 3 sensors with fixed distributions for the model and the adversary obs
+# 3 hypothesis -> all normal , first, second or third behaving abnormally
 class eval_env_AHT(Env):		 
 	def __init__(self,horizon,p_a_h, q_a_h, a, b):
 		# actions either pick first or second sensor
@@ -77,11 +77,11 @@ class eval_env_AHT(Env):
 
 	def step(self,action):
 		done = False
-		if self.t <= 0:
+		if self.t <= 1:
 			done = True
 		self.t -= 1
 
-		#2 actions either read from A or B
+		#3 actions either read from A or B
 		y = np.random.choice(np.array([0,1]), p = self.p_a_h[action][self.hypothesis])
 		z = np.random.choice(np.array([0,1]), p = self.q_a_h[action][self.hypothesis])
 		
