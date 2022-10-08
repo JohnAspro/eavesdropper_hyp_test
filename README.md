@@ -14,7 +14,7 @@ impressive results. Now we will introduse an evasive or eavesdropper into the pr
 that someone knows and follows your actions (what sensor you see at each time step) but with different 
 probalities for his observation. We call legitimate the agent which is trying to maximize his belief 
 for some hypothesis and minimize the belief for the eavesdropper. The output that legitimate receives
-is noted by y and the eavesdropper is noted z. We use a two 4-dimentional belief vectors for the four
+is noted by y and the eavesdropper is noted z. We use two 4-dimentional belief vectors for the four
 hypothesis and the two agents, they are initialized with the prior probabilities, in our case 1/4 since 
 we have 3 sensors and 4 hypothesis as stated above. After every timestep a feedback from some sensor we 
 choosed was given and the belief vector is updated by bayesian update rule. We feed the above vector to 
