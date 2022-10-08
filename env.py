@@ -45,8 +45,8 @@ q_a_h[2][2]=[0.79,0.21]
 q_a_h[2][3]=[0.35,0.65]
 
 
-# 2 sensors with fixed distributions for the model and the adversary obs
-# 3 hypothesis -> all normal , first or second behaving abnormally
+# 3 sensors with fixed distributions for the model and the adversary obs
+# 3 hypothesis -> all normal , first, second or third behaving abnormally
 class evasive_hypothesis_testing_env(Env):		 
 	def __init__(self,horizon,p_a_h, q_a_h, a, b):
 		# actions either pick first or second sensor
@@ -77,11 +77,11 @@ class evasive_hypothesis_testing_env(Env):
 
 	def step(self,action):
 		done = False
-		if self.t <= 0:
+		if self.t <= 1:
 			done = True
 		self.t -= 1
 
-		#2 actions either read from A or B
+		#3 actions either read from A or B
 		y = np.random.choice(np.array([0,1]), p = self.p_a_h[action][self.hypothesis])
 		z = np.random.choice(np.array([0,1]), p = self.q_a_h[action][self.hypothesis])
 		
@@ -107,22 +107,3 @@ class evasive_hypothesis_testing_env(Env):
 		self.adv_belief_vector = self.prior
 		self.t = self.horizon
 		return self.legit_belief_vector
-
-# hor = 25
-# a = 1
-# b = 1
-# env = evasive_hypothesis_testing_env(hor, p_a_h, q_a_h, a, b)
-# episodes = 3
-# for episode in range(1, episodes+1):
-#     state = env.reset()
-#     done = False
-#     score = 0 
-    
-#     while not done:
-#         #env.render()
-#         action = env.action_space.sample()
-#         print(action)
-#         n_state, reward, done, info = env.step(action)
-#         # print(n_state)
-#         score+=reward
-#     print('Episode:{} Score:{}'.format(episode, score))

@@ -1,0 +1,28 @@
+from env import *
+from eval_env import *
+from chernoff_test import *
+from stable_baselines3 import A2C,PPO,DQN
+import os
+
+models_dir = "models"
+log_dir = "logs"
+
+if not os.path.exists(models_dir):
+    os.makedirs(models_dir)
+
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+hor = 25
+a = 1
+b = 1
+
+# RL agent
+env=evasive_hypothesis_testing_env(hor, p_a_h, q_a_h, a, b)
+Eval_env = eval_env_AHT(hor, p_a_h, q_a_h, a, b)
+model = A2C('MlpPolicy',env, verbose = 1, tensorboard_log = log_dir, create_eval_env = True)
+
+for i in range(1,30):
+    model.learn(total_timesteps = 10000, reset_num_timesteps = False, \
+        tb_log_name="A2C", eval_env = Eval_env, eval_freq = 1000, n_eval_episodes=1000)
+    model.save(f"{models_dir}/A2C/{10000*i}")

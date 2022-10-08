@@ -29,29 +29,4 @@ def chernoffStrategy(ro):
   index=np.argmax(g_vals)
   bestG=g_s[index]
   action= np.random.choice([0,1],p=bestG)
-  return action
-
-# test_env_data=[]
-# hor = 25
-# a = 1
-# b = 1
-# env=evasive_hypothesis_testing_env(hor, p_a_h, q_a_h, a, b)
-# test_episodes=1000
-# errorProbs=0.0
-# random_times=[2^l for l in range(10)]
-# for train_episode in range(test_episodes):
-#   env.reset()
-  
-#   for t in range(env.horizon):
-#     #print(env.ro)
-    
-#     if t in random_times:
-#       action=np.random.choice([0,1])
-#     else:
-#       action=chernoffStrategy(env.legit_belief_vector)
-#     state,y,done,info=env.step(action)
-#     # print(env.hypothesis,"action,ro=",action,"-",env.legit_belief_vector)
-#     if done==True:
-#       errorProbs+=1-max(env.legit_belief_vector)
-# print(errorProbs/test_episodes)
-  
+  return action  

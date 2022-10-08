@@ -11,7 +11,7 @@ b = 1
 # RL agent
 env = eval_env_AHT(hor, p_a_h, q_a_h, a, b)
 models_dir = "models"
-model_path = f"{models_dir}/280000.zip"
+model_path = f"{models_dir}/PPO/280000.zip"
 model = PPO.load(model_path, env)
 
 # Chernoff
