@@ -46,7 +46,7 @@ q_a_h[2][3]=[0.35,0.65]
 
 
 # 3 sensors with fixed distributions for the model and the adversary obs
-# 3 hypothesis -> all normal , first, second or third behaving abnormally
+# 4 hypothesis -> all normal , first, second or third behaving abnormally
 class evasive_hypothesis_testing_env(Env):		 
 	def __init__(self,horizon,p_a_h, q_a_h, a, b):
 		# actions either pick first or second sensor
