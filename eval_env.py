@@ -13,9 +13,9 @@ p_a_h[0][1]=[0.2,0.8]
 p_a_h[0][2]=[0.82,0.18]
 p_a_h[0][3]=[0.83,0.17]
 
-p_a_h[1][0]=[0.21,0.79]
+p_a_h[1][0]=[0.79,0.21]
 p_a_h[1][1]=[0.8,0.2]
-p_a_h[1][2]=[0.81,0.19]
+p_a_h[1][2]=[0.19,0.81]
 p_a_h[1][3]=[0.77,0.23]
 
 p_a_h[2][0]=[0.75,0.25]
@@ -46,7 +46,7 @@ q_a_h[2][3]=[0.35,0.65]
 
 
 # 3 sensors with fixed distributions for the model and the adversary obs
-# 3 hypothesis -> all normal , first, second or third behaving abnormally
+# 4 hypothesis -> all normal , first, second or third behaving abnormally
 class eval_env_AHT(Env):		 
 	def __init__(self,horizon,p_a_h, q_a_h, a, b):
 		# actions either pick first or second sensor
@@ -88,12 +88,12 @@ class eval_env_AHT(Env):
 		self.legit_belief_vector, self.adv_belief_vector = \
 			self.update_b_v(action, y, z, self.legit_belief_vector, self.adv_belief_vector)
 		#legitimate errors probability
-		ler = 1 - self.b*np.amax(self.legit_belief_vector)
+		self.ler = 1 - np.amax(self.legit_belief_vector)
 		#adversary errors probability
-		aer = 1 - self.a*np.amax(self.adv_belief_vector) 
+		self.aer = 1 - np.amax(self.adv_belief_vector) 
 		
 		if done:
-			reward = self.b*aer - self.a*ler
+			reward = self.b*self.aer - self.a*self.ler
 		else:
 			reward = 0
 		
@@ -106,7 +106,8 @@ class eval_env_AHT(Env):
 
 	def reset(self):
 		#init the hypothesis and the belief vectors
-		self.hypothesis = random.randint(0,3)
+		# self.hypothesis = random.randint(0,3)
+		self.hypothesis = 0
 		self.legit_belief_vector = self.prior
 		self.adv_belief_vector = self.prior
 		self.t = self.horizon
