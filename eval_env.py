@@ -77,11 +77,10 @@ class eval_env_AHT(Env):
 
 	def step(self,action):
 		done = False
-		if self.t <= 1:
+		if self.t == self.horizon - 1:
 			done = True
-		self.t -= 1
+		self.t += 1
 
-		#3 actions either read from A or B
 		y = np.random.choice(np.array([0,1]), p = self.p_a_h[action][self.hypothesis])
 		z = np.random.choice(np.array([0,1]), p = self.q_a_h[action][self.hypothesis])
 		
@@ -93,7 +92,8 @@ class eval_env_AHT(Env):
 		self.aer = 1 - np.amax(self.adv_belief_vector) 
 		
 		if done:
-			reward = self.b*self.aer - self.a*self.ler
+			# reward = self.a*np.amax(self.adv_belief_vector)/(self.b*np.amax(self.legit_belief_vector))
+			reward = -self.a*self.ler + self.b*self.aer
 		else:
 			reward = 0
 		
@@ -106,9 +106,12 @@ class eval_env_AHT(Env):
 
 	def reset(self):
 		#init the hypothesis and the belief vectors
-		# self.hypothesis = random.randint(0,3)
-		self.hypothesis = 0
+		self.hypothesis = random.randint(0,3)
+		# self.hypothesis = 0
 		self.legit_belief_vector = self.prior
 		self.adv_belief_vector = self.prior
-		self.t = self.horizon
+		self.t = 0
+		self.ler = 0.75
+		self.aer = 0.75
 		return self.legit_belief_vector
+
