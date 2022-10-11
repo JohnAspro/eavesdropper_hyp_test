@@ -47,15 +47,15 @@ q_a_h[2][3]=[0.35,0.65]
 
 # 3 sensors with fixed distributions for the model and the adversary obs
 # 4 hypothesis -> all normal , first, second or third behaving abnormally
-class evasive_hypothesis_testing_env(Env):		 
-	def __init__(self,horizon,p_a_h, q_a_h, a, b):
+class f_env_AHT(Env):		 
+	def __init__(self,horizon, a, b, p_a_h=p_a_h, q_a_h=q_a_h):
 		# actions either pick first or second sensor
 		self.action_space = Discrete(3)
 		#uniform prior belief vector values
 		self.prior = np.array([1/4, 1/4, 1/4, 1/4])
 		#agent only sees the legit belief vector
 		self.observation_space = \
-			Box(low = np.array([0.0,0.0,0.0,0.0]), high = np.array([1.0,1.0,1.0,1.0]), dtype = np.float64)
+			Box(low = np.array([[0.0,0.0,0.0,0.0], [0.0,0.0,0.0,0.0]]), high = np.array([[1.0,1.0,1.0,1.0],[1.0,1.0,1.0,1.0]]), dtype = np.float64)
 		self.horizon = horizon
 		self.p_a_h = p_a_h
 		self.q_a_h = q_a_h
@@ -81,32 +81,31 @@ class evasive_hypothesis_testing_env(Env):
 			done = True
 		self.t += 1
 
-		#3 actions either read from A or B
 		y = np.random.choice(np.array([0,1]), p = self.p_a_h[action][self.hypothesis])
 		z = np.random.choice(np.array([0,1]), p = self.q_a_h[action][self.hypothesis])
 		
 		self.legit_belief_vector, self.adv_belief_vector = \
 			self.update_b_v(action, y, z, self.legit_belief_vector, self.adv_belief_vector)
 		#legitimate errors probability
-		self.ler = 1 - self.b*np.amax(self.legit_belief_vector)
+		self.ler = 1 - np.amax(self.legit_belief_vector)
 		#adversary errors probability
-		self.aer = 1 - self.a*np.amax(self.adv_belief_vector) 
+		self.aer = 1 - np.amax(self.adv_belief_vector) 
 		
-		reward = -self.a*self.ler + self.b*self.aer
-		
+		# reward = self.a * np.amax(self.adv_belief_vector)/(self.b*np.amax(self.legit_belief_vector))
+		reward = - self.a * self.ler + self.b * self.aer 		
 		info = {}
 
-		return self.legit_belief_vector, reward, done, info
+		return np.array([self.legit_belief_vector,self.adv_belief_vector]), reward, done, info
 	
 	def render(self):
 		pass
 
 	def reset(self):
-		#init the hypothesis and the belief vectors
 		self.hypothesis = random.randint(0,3)
 		self.legit_belief_vector = self.prior
 		self.adv_belief_vector = self.prior
+		self.ler = 0.75
+		self.aer = 0.75
 		self.t = 0
-		self.ler = 3/4
-		self.aer = 3/4
-		return self.legit_belief_vector
+		return np.array([self.legit_belief_vector,self.adv_belief_vector])
+

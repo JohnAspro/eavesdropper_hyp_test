@@ -1,61 +1,93 @@
-from env import *
-from eval_env import *
 from chernoff_test import *
-from stable_baselines3 import A2C,PPO,DQN
+from epsilon_chernoff import *
+from naive_strategy import *
+from test_f_env import *
+from stable_baselines3 import PPO,DQN
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 
-hor = 100
+hor = 50
 a = 1
 b = 1
-
-# RL agent
-env = eval_env_AHT(hor, p_a_h, q_a_h, a, b)
-models_dir = "models"
-model_path = f"{models_dir}/PPO/280000.zip"
-model = PPO.load(model_path, env)
-
-# Chernoff
-chernoff_eval_env = eval_env_AHT(hor,p_a_h,q_a_h,a,b)
-
-episodes = 1
-RL_score = 0 
-cher_score = 0 
-model_ler = []
-model_aer = []
-chern_ler = []
-chern_aer = []
+episodes = 40
 timespace = np.arange(0,hor,1)
 
-for episode in range(1, episodes+1):
-    state = env.reset()
-    chern_state = chernoff_eval_env.reset()
-    done = False
-    print(env.hypothesis, chernoff_eval_env.hypothesis)
-    while not done:
-        action,_states = model.predict(state)
-        state, RL_reward, done, info = env.step(action)
+# RL agent
+m_env = test_f_env_AHT(hor, a, b)
+models_dir = "models"
+RL_algorithm = "PPO" 
+model_path = f"{models_dir}/{RL_algorithm}/{RL_algorithm}_f_balanced/980000.zip"
+model = PPO.load(model_path, m_env)
+m_av_err = [[0]*hor,[0]*hor]
 
-        action=chernoffStrategy(chern_state)
-        chern_state, cher_reward, done, c_info = chernoff_eval_env.step(action)
-        print("LER RL", env.ler, "Chernoff", chernoff_eval_env.ler, "AEP RL", env.aer, "Chernoff", chernoff_eval_env.aer)
-        model_ler.append(env.ler)
-        model_aer.append(env.aer)
-        chern_ler.append(chernoff_eval_env.ler)
-        chern_aer.append(chernoff_eval_env.aer)
-    print(len(timespace))
-    plt.plot(timespace, model_ler, timespace, chern_ler)
-    plt.ylabel('Legitimate Error Probability')
-    plt.grid()    
-    plt.show()
-    plt.plot(timespace, model_aer, timespace, chern_aer)
-    plt.ylabel('Adversary Error Probability')
-    plt.grid()
-    plt.show()
-    RL_score += RL_reward
-    cher_score += cher_reward     
-    print(env.legit_belief_vector)
-    print(chernoff_eval_env.legit_belief_vector)
+# Chernoff strategy
+c_env = test_f_env_AHT(hor,a,b)
+c_av_err = [[0]*hor,[0]*hor]
+
+#epsilon chernoff strategy
+eps_c_env = test_f_env_AHT(hor,a,b)
+eps_c_av_err = [[0]*hor,[0]*hor]
+
+#naive strategy
+n_env = test_f_env_AHT(hor,a,b)
+n_av_err = [[0]*hor,[0]*hor]
+
+for episode in range(1, episodes+1):
+    state = m_env.reset()
+    chern_state = c_env.reset()
+    eps_c_state = eps_c_env.reset()
+    n_state = n_env.reset()
+    done = False
+    
+    # print(m_env.hypothesis, c_env.hypothesis, eps_c_env.hypothesis, n_env.hypothesis)
+    print(episode)
+
+    while not done:
+        m_av_err[0][m_env.t] += m_env.ler/episodes 
+        m_av_err[1][m_env.t] += m_env.aer/episodes
+        c_av_err[0][c_env.t] += c_env.ler/episodes
+        c_av_err[1][c_env.t] += c_env.aer/episodes
+        eps_c_av_err[0][eps_c_env.t] += eps_c_env.ler/episodes
+        eps_c_av_err[1][eps_c_env.t] += eps_c_env.aer/episodes
+        n_av_err[0][n_env.t] += n_env.ler/episodes
+        n_av_err[1][n_env.t] += n_env.aer/episodes
+       
+        #model action
+        action,_states = model.predict(state)
+        state, RL_reward, done, info = m_env.step(int(action))
+
+        #classic chernoff action
+        action=chernoffStrategy(chern_state[1])
+        chern_state, cher_reward, done, c_info = c_env.step(action)
+
+        #epsilon chernoff action
+        action = epsilon_chernoff(eps_c_state[0],eps_c_state[1], epsilon = 0.5)
+        eps_c_state, eps_cher_reward, done, eps_c_info = eps_c_env.step(action)
+
+        #naive strategy action
+        action = naive_strategy(n_state[0],n_state[1],a,b)
+        n_state, n_reward, done, n_info = n_env.step(action)
+
+plt.title('Error Averaged over {} episodes'.format(episodes))
+plt.ylabel('Legitimate Error Probability')
+plt.xlabel('Steps')
+plt.plot(timespace, m_av_err[0], '-g', label = RL_algorithm)
+plt.plot(timespace, c_av_err[0], '-b', label = 'Chernoff')
+plt.plot(timespace, eps_c_av_err[0], '-r', label = 'Epsilon Chernoff')
+plt.plot(timespace, n_av_err[0], '-m', label = 'Naive Strategy')
+plt.legend()
+plt.grid()
+plt.show()   
+plt.title('Error Averaged over {} episodes'.format(episodes))
+plt.ylabel('Adversary Error Probability')
+plt.xlabel('Steps')
+plt.plot(timespace, m_av_err[1], '-g', label = RL_algorithm)
+plt.plot(timespace, c_av_err[1], '-b', label = 'Chernoff')
+plt.plot(timespace, eps_c_av_err[1], '-r', label = 'Epsilon Chernoff')
+plt.plot(timespace, n_av_err[1], '-m', label = 'Naive Strategy')
+plt.legend()
+plt.grid()    
+plt.show() 
 #     print('Episode {}, hyp {}: RL Agent got {} and Chernoff Test gave {}'.format(episode, env.hypothesis, RL_reward, cher_reward))
 # print('total average score for RL {} and for chernoff {} '.format(RL_score/episodes, cher_score/episodes))

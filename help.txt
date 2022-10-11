@@ -1,0 +1,23 @@
+#Trained only with PARTIAL(p) observation legit vector
+	(DQN | PPO)_p_balanced: equal focus a = b 
+	(DQN | PPO)_p_adv/ : bigger focus on minimizing the adversary vector max (b>a)
+	(DQN | PPO)_p_leg/: looking to maximize fast the legitimate vector first (a>b) 
+
+#Trained with FULL(f) observation legit vector and adversary vector
+	(DQN | PPO)_f_balanced: equal focus a = b 
+	(DQN | PPO)_f_adv/ : bigger focus on minimizing the adversary vector max (b>a)
+	(DQN | PPO)_f_leg/: looking to maximize fast the legitimate vector first (a>b) 
+
+# DQN with full observation, balanced parameters, good performance:
+	DQN/DQN_f_balanced/160000k.zip 
+	About 0.32 eval reward
+
+# PPO with partial observation, balanced parameters, medium performance:
+	PPO/PPO_p_balanced/700000.zip
+	PLOTS: 100_ep_addrew_adv_.png , 100episodes_add_rew.png
+
+# PPO with full observation, balanced parameters, medium performance:
+	PPO/PP0_f_balanced/760000.zip 
+	About 0.26 eval reward
+
+
