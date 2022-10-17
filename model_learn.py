@@ -16,8 +16,8 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 hor = 50
-a = 1
-b = 1
+a = 0.8
+b = 1.2
 
 # RL agent
 env=f_env_AHT(hor, a, b)
@@ -26,6 +26,6 @@ model = PPO('MlpPolicy', env, verbose = 1, tensorboard_log = log_dir, create_eva
 
 for i in range(1,100):
     model.learn(total_timesteps = 10000, reset_num_timesteps = False, \
-        tb_log_name="PPO", eval_env = Eval_env, eval_freq = 10000, n_eval_episodes=1000)
+        tb_log_name="DQN2", eval_env = Eval_env, eval_freq = 10000, n_eval_episodes=1000)
     if i % 2 == 0:
         model.save(f"{models_dir}/PPO/PPO_f_balanced/{10000*i}")

@@ -103,10 +103,7 @@ class eval_f_env_AHT(Env):
 		pass
 
 	def reset(self):
-		#init the hypothesis and the belief vectors
-		# self.hypothesis = random.randint(0,3)
 		self.hypothesis = random.randint(0,3)
-		# self.hypothesis = 0
 		self.legit_belief_vector = self.prior
 		self.adv_belief_vector = self.prior
 		self.ler = 0.75

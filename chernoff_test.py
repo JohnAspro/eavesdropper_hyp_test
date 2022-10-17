@@ -33,7 +33,6 @@ def chernoffStrategy(ro):
         continue
       j_val=0.0
       for a in [0,1,2]:
-
         j_val+=g[a]*getKLDiv(p_a_h[a][j_hat],p_a_h[a][j])
       j_vals.append(j_val)
     g_vals.append(min(j_vals))

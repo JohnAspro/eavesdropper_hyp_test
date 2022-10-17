@@ -10,15 +10,15 @@ import numpy as np
 hor = 50
 a = 1
 b = 1
-episodes = 40
+episodes = 10
 timespace = np.arange(0,hor,1)
 
 # RL agent
 m_env = test_f_env_AHT(hor, a, b)
 models_dir = "models"
-RL_algorithm = "PPO" 
-model_path = f"{models_dir}/{RL_algorithm}/{RL_algorithm}_f_balanced/980000.zip"
-model = PPO.load(model_path, m_env)
+RL_algorithm = "DQN" 
+model_path = f"{models_dir}/{RL_algorithm}/{RL_algorithm}_f_balanced/160000.zip"
+model = DQN.load(model_path, m_env)
 m_av_err = [[0]*hor,[0]*hor]
 
 # Chernoff strategy

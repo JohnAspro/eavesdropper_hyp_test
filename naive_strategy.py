@@ -31,7 +31,7 @@ def naive_strategy(ro,ro_adv,alpha,beta):
                 score=0.0
                 for j  in [0,1,2,3]:
                     ro_new,ro_adv_new = update_b_v(a,y,z,ro,ro_adv)
-                    score+=ro[j]*( (1-max(ro_new))*(-alpha)+(1-max(ro_adv_new))*beta )
+                    score+=ro[j]*((1-max(ro_new))*(-alpha)+(1-max(ro_adv_new))*beta)
                 alpha_score+=score*sigma*z_sigma
         alpha_scores.append(alpha_score)
     action=np.argmax(alpha_scores)
