@@ -2,6 +2,9 @@ from gym import Env
 from gym.spaces import Discrete, Box
 import numpy as np
 import random
+from gym.envs.registration import register
+
+
 
 p_a_h={}
 p_a_h[0]={}
@@ -104,6 +107,7 @@ class test_f_env_AHT(Env):
 
 	def reset(self):
 		self.hypothesis = 0
+		# self.hypothesis = random.randint(0,3)
 		self.legit_belief_vector = self.prior
 		self.adv_belief_vector = self.prior
 		self.ler = 0.75
